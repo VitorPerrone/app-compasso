@@ -5,18 +5,12 @@ export default function Home() {
     <main className="min-h-screen flex flex-col">
       <Header />
       
-      {/* Container Principal */}
-      <section className="flex-1 flex justify-center px-6 md:px-20 py-20">
-        <div className="flex flex-col md:flex-row items-center gap-12">
-
-          <div className="text-left md:text-right flex-1 border-l-4 md:border-l-0 md:border-r-4 border-slate-900 pl-6 md:pl-0 md:pr-6">
-            <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-slate-900 mb-7">
-              Compasso
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-500 whitespace-nowrap">
-              Organização precisa para o seu ministério.
-            </p>
-          </div>
+      {/* Container Principal Centralizado */}
+      <section className="flex-1 flex flex-col justify-center items-center px-6 py-20">
+        
+        <div className="flex flex-col md:flex-row items-center gap-12 max-w-4xl w-full">
+          
+          {/* Coluna 1: Ícone */}
           <div className="shrink-0">
             <img 
               src="/musical-note.png" 
@@ -24,7 +18,34 @@ export default function Home() {
               className="w-24 h-24 md:w-32 md:h-32 opacity-90" 
             />
           </div>
-          
+
+          {/* Linha Divisória */}
+          <div className="hidden md:block w-px h-32 bg-slate-300"></div>
+
+          {/* Coluna 2: Títulos e Botões */}
+          <div className="text-center md:text-left flex-1">
+            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-slate-900 mb-4">
+              Compasso
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-500 mb-10">
+              Organização precisa para o seu ministério.
+            </p>
+
+            <div className="flex flex-col md:flex-row items-center md:justify-start gap-4">
+              <a 
+                href="/registro" 
+                className="bg-slate-900 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-slate-800 transition-all shadow-lg"
+              >
+                Comece já
+              </a>
+              <a 
+                href="/login" 
+                className="text-slate-500 hover:text-slate-900 transition-colors underline underline-offset-4"
+              >
+                Entrar
+              </a>
+            </div>
+          </div>
           
         </div>
       </section>
