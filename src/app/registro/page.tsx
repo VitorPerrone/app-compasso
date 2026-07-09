@@ -23,6 +23,24 @@ export default function Registo() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Lógica de Cadastro com Google (Fluxo PKCE)
+  async function handleGoogleSignUp() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        // @ts-ignore
+        flowType: 'pkce',
+      },
+    });
+    if (error) {
+      setMensagem(error.message);
+      setLoading(false);
+    }
+  }
+
+  // Lógica de Cadastro Manual
   async function handleRegisto(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -44,28 +62,17 @@ export default function Registo() {
 
       if (orgError) throw orgError;
 
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([{
-          id: authData.user?.id,
-          name: formData.leaderName,
-          email: formData.email,
-          role: 'ADMIN_ORG',
-          organization_id: orgId
-        }]);
+      await supabase.from('profiles').insert([{
+        id: authData.user?.id,
+        name: formData.leaderName,
+        email: formData.email,
+        role: 'ADMIN_ORG',
+        organization_id: orgId
+      }]);
 
-      if (profileError) throw profileError;
-
-      setMensagem('Registo concluído com sucesso!');
-      setFormData({ orgName: '', leaderName: '', email: '', password: '' });
       router.push('/dashboard');
-      
     } catch (error: any) {
-      console.error("Erro capturado:", error); // Log para depuração
       setMensagem(`Erro: ${error.message}`);
-      
-      // FORÇA A LIMPEZA IMEDIATA NO CATCH
-      setFormData({ orgName: '', leaderName: '', email: '', password: '' });
     } finally {
       setLoading(false);
     }
@@ -104,7 +111,7 @@ export default function Registo() {
 
             <div className="relative">
               <label className="block text-xs font-bold text-slate-500 uppercase">Senha</label>
-              <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none"  placeholder="Insira a sua senha" />
+              <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="••••••••" />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-9 text-slate-400">
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -115,11 +122,28 @@ export default function Registo() {
             </button>
           </form>
 
+          {/* Divisor */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
+            <div className="relative flex justify-center text-sm"><span className="bg-white px-2 text-slate-500">ou</span></div>
+          </div>
+
+          {/* Botão Google */}
+          <button 
+            type="button" 
+            onClick={handleGoogleSignUp}
+            disabled={loading}
+            className="w-full bg-white border border-slate-300 text-slate-700 font-bold py-3 rounded-lg hover:bg-slate-50 transition flex items-center justify-center gap-2"
+          >
+            <img src="/google.png" alt="Google" className="w-5 h-5" />
+            Continuar com Google
+          </button>
+
           <p className="mt-4 text-sm text-slate-600 text-right">
             Já possui conta? <Link href="/login" className="text-blue-600 font-semibold hover:underline">Log in</Link>
           </p>
 
-          {mensagem && <p className="mt-4 text-red-600 text-sm font-medium text-left">{mensagem}</p>}
+          {mensagem && <p className="mt-4 text-red-600 text-sm font-medium text-center">{mensagem}</p>}
         </div>
       </div>
     </main>

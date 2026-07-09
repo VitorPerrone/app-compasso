@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col bg-slate-50">
       <Header />
       
       {/* Container Principal Centralizado */}
@@ -34,7 +34,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row items-center md:justify-start gap-4">
               <a 
                 href="/registro" 
-                className="bg-slate-900 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-slate-800 transition-all shadow-lg"
+                className="bg-slate-900 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-slate-800 transition-all shadow-lg w-full md:w-auto text-center"
               >
                 Comece já
               </a>
