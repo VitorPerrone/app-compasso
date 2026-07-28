@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
       // Se não encontrar perfil, força o completar cadastro
       if (!profile) {
-        return NextResponse.redirect(`${origin}/completar-cadastro`);
+        return NextResponse.redirect(`${origin}/login?error=oauth_failed`);
       }
       
       return NextResponse.redirect(`${origin}/dashboard`);

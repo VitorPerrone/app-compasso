@@ -1,7 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams  } from 'next/navigation';
+import LoginErrorModal from './LoginErrorModal';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -9,7 +10,19 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [mensagem, setMensagem] = useState('');
+  const [hasError, setHasError] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+   useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'oauth_failed') {
+      setMensagem('Não foi possível entrar com o Google. Tente novamente.');
+      setHasError(true);
+      router.replace('/login');
+    }
+  }, [searchParams, router]);
+
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,6 +54,7 @@ export default function Login() {
 
     if (error) {
       setMensagem(error.message);
+      setHasError(true);
       setLoading(false);
     }
   }
@@ -102,6 +116,10 @@ export default function Login() {
           {mensagem && <p className="mt-4 text-red-600 text-sm font-medium text-center">{mensagem}</p>}
         </div>
       </div>
+      <LoginErrorModal
+        isOpen={hasError}
+        onClose={() => setHasError(false)}
+      />
     </main>
   );
 }
