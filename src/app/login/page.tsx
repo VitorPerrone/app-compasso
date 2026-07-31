@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useRouter, useSearchParams  } from 'next/navigation';
-import LoginErrorModal from './LoginErrorModal';
+import LoginErrorModal from '../../components/LoginErrorModal';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export default function Login() {
    useEffect(() => {
     const error = searchParams.get('error');
     if (error === 'oauth_failed') {
-      setMensagem('Não foi possível entrar com o Google. Tente novamente.');
+      setMensagem('Email não cadastrado em nossa plataforma. Cadastre-se ou escolha uma conta já registrada');
       setHasError(true);
       router.replace('/login');
     }

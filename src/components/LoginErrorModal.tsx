@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import BtnCompletarCadastro from "./BtnCompletarCadastro";
 
 export interface LoginErrorModalProps {
   /** Controla se a modal está visível */
@@ -15,26 +16,20 @@ export interface LoginErrorModalProps {
   onRetry?: () => void;
   /** Texto do botão de ação */
   retryLabel?: string;
+  showCompletarCadastro?: boolean;
+  /** Rota para onde o botão "Completar cadastro" redireciona */
+  completarCadastroHref?: string;
 }
 
-/**
- * Modal de erro de login.
- *
- * Uso:
- * <LoginErrorModal
- *   isOpen={hasError}
- *   onClose={() => setHasError(false)}
- *   message="E-mail ou senha incorretos."
- *   onRetry={() => setHasError(false)}
- * />
- */
 export default function LoginErrorModal({
   isOpen,
   onClose,
   title = "Não foi possível entrar",
-  message = "E-mail ou senha incorretos. Verifique os dados e tente novamente.",
+  message = "Email não cadastrado em nossa plataforma. Cadastre-se ou escolha uma conta já registrada",
   onRetry,
   retryLabel = "Tentar novamente",
+  showCompletarCadastro = true,
+  completarCadastroHref = "/completar-cadastro",
 }: LoginErrorModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +83,7 @@ export default function LoginErrorModal({
               />
             </svg>
           </div>
-
+ 
           <div className="flex-1">
             <h2 id="login-error-title" className="text-base font-semibold text-gray-900">
               {title}
@@ -97,7 +92,7 @@ export default function LoginErrorModal({
               {message}
             </p>
           </div>
-
+ 
           <button
             type="button"
             onClick={onClose}
@@ -109,8 +104,8 @@ export default function LoginErrorModal({
             </svg>
           </button>
         </div>
-
-        <div className="mt-6 flex justify-end gap-2">
+ 
+        <div className="mt-6 flex justify-center gap-5">
           <button
             type="button"
             onClick={onClose}
@@ -126,6 +121,9 @@ export default function LoginErrorModal({
             >
               {retryLabel}
             </button>
+          )}
+          {showCompletarCadastro && (
+            <BtnCompletarCadastro href={completarCadastroHref} />
           )}
         </div>
       </div>
