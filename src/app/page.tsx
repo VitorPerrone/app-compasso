@@ -33,7 +33,7 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row items-center md:justify-start gap-4">
               <a 
-                href="/registro" 
+                href="/cadastro" 
                 className="bg-slate-900 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-slate-800 transition-all shadow-lg w-full md:w-auto text-center"
               >
                 Comece já

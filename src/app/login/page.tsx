@@ -5,20 +5,20 @@ import { useRouter, useSearchParams  } from 'next/navigation';
 import LoginErrorModal from '../../components/LoginErrorModal';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import {translateAuthError} from '../../lib/auth-errors';
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [mensagem, setMensagem] = useState('');
-  const [hasError, setHasError] = useState(false);
+  const [HasOAuthError, setHasOAuthError] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
    useEffect(() => {
     const error = searchParams.get('error');
     if (error === 'oauth_failed') {
-      setMensagem('Email não cadastrado em nossa plataforma. Cadastre-se ou escolha uma conta já registrada');
-      setHasError(true);
+      setHasOAuthError(true);
       router.replace('/login');
     }
   }, [searchParams, router]);
@@ -34,7 +34,7 @@ export default function Login() {
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setMensagem(error.message);
+      setMensagem(translateAuthError(error));
       setLoading(false);
     } else {
       router.push('/dashboard');
@@ -46,17 +46,11 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?origem=login`,
         // @ts-ignore: Forçar a propriedade flowType apesar da restrição de tipo
         flowType: 'pkce',
       },
     });
-
-    if (error) {
-      setMensagem(error.message);
-      setHasError(true);
-      setLoading(false);
-    }
   }
 
   return (
@@ -110,15 +104,15 @@ export default function Login() {
           </button>
 
           <p className="mt-4 text-sm text-slate-600 text-center">
-            Ainda não tem conta? <Link href="/registro" className="text-blue-600 font-semibold hover:underline">Criar conta</Link>
+            Ainda não tem conta? <Link href="/cadastro" className="text-blue-600 font-semibold hover:underline">Criar conta</Link>
           </p>
 
           {mensagem && <p className="mt-4 text-red-600 text-sm font-medium text-center">{mensagem}</p>}
         </div>
       </div>
       <LoginErrorModal
-        isOpen={hasError}
-        onClose={() => setHasError(false)}
+        isOpen={HasOAuthError}
+        onClose={() => setHasOAuthError(false)}
       />
     </main>
   );
