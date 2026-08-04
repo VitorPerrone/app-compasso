@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import { format } from '../../lib/format';
 
 export default function Registo() {
   const [loading, setLoading] = useState(false);
@@ -13,6 +14,7 @@ export default function Registo() {
   const [formData, setFormData] = useState({
     orgName: '',
     leaderName: '',
+    phone: '',
     email: '',
     password: ''
   });
@@ -29,7 +31,7 @@ export default function Registo() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?origem=cadastro`,
         // @ts-ignore
         flowType: 'pkce',
       },
@@ -55,9 +57,9 @@ export default function Registo() {
       if (authError) throw authError;
 
       const slug = formData.orgName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const { data: orgId, error: orgError } = await supabase.rpc('create_org', { 
-        org_name: formData.orgName, 
-        slug_text: slug 
+      const { data: orgId, error: orgError } = await supabase.rpc('create_org', {
+        org_name: formData.orgName,
+        slug_text: slug
       });
 
       if (orgError) throw orgError;
@@ -66,6 +68,7 @@ export default function Registo() {
         id: authData.user?.id,
         name: formData.leaderName,
         email: formData.email,
+        phone: formData.phone,
         role: 'ADMIN_ORG',
         organization_id: orgId
       }]);
@@ -92,26 +95,60 @@ export default function Registo() {
       <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center items-center bg-white">
         <div className="w-full max-w-sm">
           <h2 className="text-2xl font-bold text-slate-900 mb-6 text-left">Crie a sua conta</h2>
-          
+
           <form onSubmit={handleRegisto} className="space-y-4" autoComplete="off">
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase">Nome da Igreja</label>
-              <input type="text" name="orgName" value={formData.orgName} onChange={handleChange} required className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="Igreja Batista Central" />
+              <input
+                type="text"
+                name="orgName"
+                value={formData.orgName}
+                onChange={handleChange}
+                required
+                className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="Igreja Batista Central" />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase">Seu Nome</label>
-              <input type="text" name="leaderName" value={formData.leaderName} onChange={handleChange} required className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="João Silva" />
+              <input
+                type="text"
+                name="leaderName"
+                value={formData.leaderName}
+                onChange={handleChange}
+                required
+                className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="João Silva" />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase">Telefone / WhatsApp</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone} 
+                onChange={(e) => setFormData({ ...formData, phone: format.phone(e.target.value)})}
+                required maxLength={11}
+                className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="(00) 00000-0000" />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase">E-mail</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} required className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="joao@email.com" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange} required
+                className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="joao@email.com" />
             </div>
 
             <div className="relative">
               <label className="block text-xs font-bold text-slate-500 uppercase">Senha</label>
-              <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="••••••••" />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required className="mt-1 w-full p-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none" placeholder="••••••••" />
+
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-9 text-slate-400">
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -129,8 +166,8 @@ export default function Registo() {
           </div>
 
           {/* Botão Google */}
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={handleGoogleSignUp}
             disabled={loading}
             className="w-full bg-white border border-slate-300 text-slate-700 font-bold py-3 rounded-lg hover:bg-slate-50 transition flex items-center justify-center gap-2"

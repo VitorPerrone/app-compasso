@@ -3,8 +3,9 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams, origin: originUrl } = new URL(request.url);
   const code = searchParams.get('code');
+  const typeAuth = searchParams.get('origem');
   
   if (code) {
     const cookieStore = await cookies();
@@ -30,14 +31,17 @@ export async function GET(request: Request) {
         .eq('id', user.id)
         .single();
 
-      // Se não encontrar perfil, força o completar cadastro
       if (!profile) {
-        return NextResponse.redirect(`${origin}/completar-cadastro`);
+        if (typeAuth === 'cadastro'){
+          return NextResponse.redirect(`${originUrl}/completar-cadastro`)
+        }
+        if (typeAuth === 'login'){
+          return NextResponse.redirect(`${originUrl}/login?error=oauth_failed`);
+        }
       }
-      
-      return NextResponse.redirect(`${origin}/dashboard`);
+      return NextResponse.redirect(`${originUrl}/dashboard`);
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+  return NextResponse.redirect(`${originUrl}/login?error=auth_failed`);
 }
